@@ -9,7 +9,8 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState('');
 
-  const API = 'http://localhost:5000/api/todos';
+  // 🔥 여기 수정됨 (중요)
+  const API = '/api/todos';
 
   // 전체 조회
   const fetchTodos = async () => {
@@ -48,6 +49,7 @@ function App() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
+
         {/* 로고 */}
         <img src={logoImage} alt="logo" style={styles.logo} />
 
@@ -60,9 +62,6 @@ function App() {
             placeholder="할 일을 입력하세요..."
             value={text}
             onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') addTodo();
-            }}
           />
           <button style={styles.addBtn} onClick={addTodo}>
             추가
@@ -73,6 +72,7 @@ function App() {
         <ul style={styles.list}>
           {todos.map((todo) => (
             <li key={todo._id} style={styles.item}>
+
               <div style={styles.leftSection}>
                 <input
                   type="checkbox"
@@ -96,9 +96,11 @@ function App() {
               >
                 삭제
               </button>
+
             </li>
           ))}
         </ul>
+
       </div>
     </div>
   );
@@ -120,23 +122,18 @@ const styles = {
   },
 
   card: {
-    background: 'rgba(255, 255, 255, 0.9)',
+    background: 'rgba(255,255,255,0.9)',
     padding: '30px',
     borderRadius: '20px',
     width: '400px',
     boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
     backdropFilter: 'blur(5px)',
-
-    // 🔥 애니메이션 추가
-    transition: 'all 0.3s ease',
   },
 
   logo: {
+    width: '80px',
     display: 'block',
     margin: '0 auto 10px',
-    width: '80px',
-
-    transition: 'all 0.3s ease',
   },
 
   title: {
@@ -155,9 +152,6 @@ const styles = {
     padding: '10px',
     borderRadius: '10px',
     border: '1px solid #ddd',
-    outline: 'none',
-
-    transition: 'all 0.3s ease',
   },
 
   addBtn: {
@@ -167,9 +161,6 @@ const styles = {
     background: '#1e3a8a',
     color: '#fff',
     cursor: 'pointer',
-    fontWeight: 'bold',
-
-    transition: 'all 0.3s ease',
   },
 
   list: {
@@ -185,9 +176,7 @@ const styles = {
     padding: '10px',
     borderRadius: '10px',
     marginBottom: '10px',
-
-    // 🔥 핵심 애니메이션
-    transition: 'all 0.3s ease',
+    transition: 'all 0.3s ease', // 🔥 애니메이션
   },
 
   leftSection: {
@@ -198,7 +187,6 @@ const styles = {
 
   text: {
     fontSize: '16px',
-    transition: 'all 0.3s ease',
   },
 
   deleteBtn: {
@@ -208,7 +196,5 @@ const styles = {
     padding: '5px 10px',
     borderRadius: '8px',
     cursor: 'pointer',
-
-    transition: 'all 0.3s ease',
   },
 };
