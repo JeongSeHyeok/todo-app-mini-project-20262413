@@ -1,14 +1,14 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors'); // ✅ 추가
+const cors = require('cors');
 
 const Todo = require('./models/Todo');
 
 const app = express();
 
-// ✅ 미들웨어
-app.use(cors()); // ✅ 추가
+// 미들웨어
+app.use(cors());
 app.use(express.json());
 
 // MongoDB 연결
@@ -16,18 +16,17 @@ mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('✅ MongoDB 연결 성공'))
   .catch(err => console.error('❌ MongoDB 연결 실패:', err));
 
-// 기본 테스트
+// 테스트
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-// ✅ GET (전체 조회)
+// 🔥 핵심: /api 유지 (다시 원래대로!)
 app.get('/api/todos', async (req, res) => {
   const todos = await Todo.find();
   res.json(todos);
 });
 
-// ✅ POST (생성)
 app.post('/api/todos', async (req, res) => {
   try {
     const todo = new Todo({
@@ -41,7 +40,6 @@ app.post('/api/todos', async (req, res) => {
   }
 });
 
-// ✅ PUT (수정)
 app.put('/api/todos/:id', async (req, res) => {
   try {
     const updatedTodo = await Todo.findByIdAndUpdate(
@@ -59,7 +57,6 @@ app.put('/api/todos/:id', async (req, res) => {
   }
 });
 
-// ✅ DELETE (삭제)
 app.delete('/api/todos/:id', async (req, res) => {
   try {
     await Todo.findByIdAndDelete(req.params.id);
@@ -69,8 +66,13 @@ app.delete('/api/todos/:id', async (req, res) => {
   }
 });
 
-// 서버 실행
+// 🔥🔥🔥 가장 중요 부분 🔥🔥🔥
+
+// 👉 항상 실행 (로컬용)
 const PORT = 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 서버 실행: http://localhost:${PORT}`);
+  console.log(`🚀 로컬 서버 실행: http://localhost:${PORT}`);
 });
+
+// 👉 Vercel용
+module.exports = app;

@@ -10,7 +10,7 @@ function App() {
   const [text, setText] = useState('');
 
   // 🔥 여기 수정됨 (중요)
-  const API = '/api/todos';
+  const API = 'http://localhost:5000/api/todos';
 
   // 전체 조회
   const fetchTodos = async () => {
