@@ -9,15 +9,19 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState('');
 
-  // ✅ 수정된 API 주소 (핵심)
+  // ✅ ✅ 핵심 수정 (이거 하나만 바뀜)
   const API = import.meta.env.PROD
-    ? "https://todo-app-mini-project-20262413.vercel.app/api/todos"
+    ? "/api/todos"
     : "http://localhost:5000/api/todos";
 
   // 전체 조회
   const fetchTodos = async () => {
-    const res = await axios.get(API);
-    setTodos(res.data);
+    try {
+      const res = await axios.get(API);
+      setTodos(res.data);
+    } catch (err) {
+      console.error("GET 에러:", err);
+    }
   };
 
   useEffect(() => {
@@ -35,13 +39,13 @@ function App() {
 
   // 삭제
   const deleteTodo = async (id) => {
-    await axios.delete(`${API}/${id}`);
+    await axios.delete(`${API}?id=${id}`);
     fetchTodos();
   };
 
   // 완료 토글
   const toggleTodo = async (todo) => {
-    await axios.put(`${API}/${todo._id}`, {
+    await axios.put(`${API}?id=${todo._id}`, {
       text: todo.text,
       completed: !todo.completed,
     });
@@ -114,7 +118,7 @@ const styles = {
   container: {
     minHeight: '100vh',
     backgroundImage: `url(${bgImage})`,
-    backgroundSize: 'contain',
+    backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
 
