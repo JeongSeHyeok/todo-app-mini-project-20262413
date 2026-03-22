@@ -1,8 +1,0 @@
-{
-  "routes": [
-    {
-      "src": "/api/todos",
-      "dest": "/api/todos.js"
-    }
-  ]
-}
