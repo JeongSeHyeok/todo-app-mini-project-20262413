@@ -1,49 +1,45 @@
-import mongoose from "mongoose";
+// api/todos.js
 
-const TodoSchema = new mongoose.Schema({
-  text: String,
-  completed: Boolean,
-});
+let todos = [];
 
-const Todo = mongoose.models.Todo || mongoose.model("Todo", TodoSchema);
+export default function handler(req, res) {
+  const { method, query } = req;
 
-let isConnected = false;
-
-async function connectDB() {
-  if (isConnected) return;
-
-  await mongoose.connect(process.env.MONGODB_URI);
-  isConnected = true;
-}
-
-export default async function handler(req, res) {
-  await connectDB();
-
-  if (req.method === "GET") {
-    const todos = await Todo.find();
+  // GET
+  if (method === 'GET') {
     return res.status(200).json(todos);
   }
 
-  if (req.method === "POST") {
-    const newTodo = new Todo({
+  // POST
+  if (method === 'POST') {
+    const newTodo = {
+      _id: Date.now().toString(),
       text: req.body.text,
       completed: false,
-    });
-    await newTodo.save();
-    return res.status(201).json(newTodo);
+    };
+    todos.push(newTodo);
+    return res.status(200).json(newTodo);
   }
 
-  if (req.method === "PUT") {
-    const { id } = req.query;
-    const updated = await Todo.findByIdAndUpdate(id, req.body, { new: true });
-    return res.status(200).json(updated);
+  // PUT
+  if (method === 'PUT') {
+    const { id } = query;
+
+    todos = todos.map(todo =>
+      todo._id === id ? { ...todo, ...req.body } : todo
+    );
+
+    return res.status(200).json({ message: 'updated' });
   }
 
-  if (req.method === "DELETE") {
-    const { id } = req.query;
-    await Todo.findByIdAndDelete(id);
-    return res.status(200).json({ message: "삭제 완료" });
+  // DELETE
+  if (method === 'DELETE') {
+    const { id } = query;
+
+    todos = todos.filter(todo => todo._id !== id);
+
+    return res.status(200).json({ message: 'deleted' });
   }
 
-  res.status(405).end();
+  return res.status(405).end();
 }
