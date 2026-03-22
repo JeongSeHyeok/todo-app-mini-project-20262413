@@ -9,10 +9,10 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState('');
 
-  // 🔥 ✅ 여기만 수정됨
+  // ✅ 수정된 API 주소 (핵심)
   const API = import.meta.env.PROD
-    ? '/api/todos'
-    : import.meta.env.VITE_API_URL + '/api/todos';
+    ? "https://todo-app-mini-project-20262413.vercel.app/api/todos"
+    : "http://localhost:5000/api/todos";
 
   // 전체 조회
   const fetchTodos = async () => {
@@ -114,7 +114,7 @@ const styles = {
   container: {
     minHeight: '100vh',
     backgroundImage: `url(${bgImage})`,
-    backgroundSize: 'cover',
+    backgroundSize: 'contain',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
 
