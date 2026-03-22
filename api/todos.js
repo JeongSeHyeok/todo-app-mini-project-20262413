@@ -1,48 +1,51 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 
-// MongoDB 연결
-mongoose.connect(process.env.MONGODB_URI);
+// ✅ MongoDB 연결 (여기에 넣어야 함)
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
+// 모델 정의
 const TodoSchema = new mongoose.Schema({
   text: String,
   completed: { type: Boolean, default: false },
 });
 
-const Todo = mongoose.models.Todo || mongoose.model("Todo", TodoSchema);
+const Todo = mongoose.models.Todo || mongoose.model('Todo', TodoSchema);
 
-export default async function handler(req, res) {
-  const { method } = req;
-
+// handler
+module.exports = async (req, res) => {
   try {
-    if (method === "GET") {
+    if (req.method === 'GET') {
       const todos = await Todo.find();
-      return res.status(200).json(todos);
+      return res.json(todos);
     }
 
-    if (method === "POST") {
+    if (req.method === 'POST') {
       const todo = new Todo({ text: req.body.text });
-      await todo.save();
-      return res.status(201).json(todo);
+      const saved = await todo.save();
+      return res.json(saved);
     }
 
-    if (method === "PUT") {
-      const { id } = req.query;
+    if (req.method === 'PUT') {
+      const { id, text, completed } = req.body;
       const updated = await Todo.findByIdAndUpdate(
         id,
-        req.body,
+        { text, completed },
         { new: true }
       );
-      return res.status(200).json(updated);
+      return res.json(updated);
     }
 
-    if (method === "DELETE") {
-      const { id } = req.query;
+    if (req.method === 'DELETE') {
+      const { id } = req.body;
       await Todo.findByIdAndDelete(id);
-      return res.status(200).json({ message: "삭제 완료" });
+      return res.json({ message: '삭제 완료' });
     }
 
-    return res.status(405).end();
+    res.status(405).end();
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
-}
+};
