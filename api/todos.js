@@ -1,45 +1,56 @@
-// api/todos.js
+import mongoose from "mongoose";
 
-let todos = [];
+let isConnected = false;
 
-export default function handler(req, res) {
-  const { method, query } = req;
+const connectDB = async () => {
+  if (isConnected) return;
 
-  // GET
-  if (method === 'GET') {
-    return res.status(200).json(todos);
+  await mongoose.connect(process.env.MONGODB_URI);
+  isConnected = true;
+};
+
+// 모델
+const TodoSchema = new mongoose.Schema({
+  text: String,
+  completed: Boolean,
+});
+
+const Todo = mongoose.models.Todo || mongoose.model("Todo", TodoSchema);
+
+export default async function handler(req, res) {
+  await connectDB();
+
+  try {
+    if (req.method === "GET") {
+      const todos = await Todo.find();
+      return res.status(200).json(todos);
+    }
+
+    if (req.method === "POST") {
+      const todo = await Todo.create({
+        text: req.body.text,
+        completed: false,
+      });
+      return res.status(201).json(todo);
+    }
+
+    if (req.method === "DELETE") {
+      const { id } = req.query;
+      await Todo.findByIdAndDelete(id);
+      return res.status(200).json({ message: "삭제됨" });
+    }
+
+    if (req.method === "PUT") {
+      const { id } = req.query;
+      const updated = await Todo.findByIdAndUpdate(id, req.body, {
+        new: true,
+      });
+      return res.status(200).json(updated);
+    }
+
+    return res.status(405).end();
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message });
   }
-
-  // POST
-  if (method === 'POST') {
-    const newTodo = {
-      _id: Date.now().toString(),
-      text: req.body.text,
-      completed: false,
-    };
-    todos.push(newTodo);
-    return res.status(200).json(newTodo);
-  }
-
-  // PUT
-  if (method === 'PUT') {
-    const { id } = query;
-
-    todos = todos.map(todo =>
-      todo._id === id ? { ...todo, ...req.body } : todo
-    );
-
-    return res.status(200).json({ message: 'updated' });
-  }
-
-  // DELETE
-  if (method === 'DELETE') {
-    const { id } = query;
-
-    todos = todos.filter(todo => todo._id !== id);
-
-    return res.status(200).json({ message: 'deleted' });
-  }
-
-  return res.status(405).end();
 }
