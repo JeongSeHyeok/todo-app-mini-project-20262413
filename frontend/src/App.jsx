@@ -118,7 +118,7 @@ const styles = {
   container: {
     minHeight: '100vh',
     backgroundImage: `url(${bgImage})`,
-    backgroundSize: 'cover',
+    backgroundSize: 'contain',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
 
