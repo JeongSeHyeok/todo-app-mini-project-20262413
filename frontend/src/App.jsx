@@ -9,8 +9,10 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState('');
 
-  // 🔥 여기 수정됨 (중요)
-  const API = 'http://localhost:5000/api/todos';
+  // 🔥 ✅ 여기만 수정됨
+  const API = import.meta.env.PROD
+    ? '/api/todos'
+    : import.meta.env.VITE_API_URL + '/api/todos';
 
   // 전체 조회
   const fetchTodos = async () => {
@@ -176,7 +178,7 @@ const styles = {
     padding: '10px',
     borderRadius: '10px',
     marginBottom: '10px',
-    transition: 'all 0.3s ease', // 🔥 애니메이션
+    transition: 'all 0.3s ease',
   },
 
   leftSection: {
